@@ -1,5 +1,5 @@
-﻿CÓDIGO_NODO;LOCALIDAD;CUADRILLA;Fecha_Inicio;Fecha_Fin;Serie_OLT;Serie_ODF;Serie_SW;ITM;Empalme_ODF_OK;Reporte_Fotografico;Observaciones
-IC-1111-A01;Ica;CUADRILLA 1;7/05/2023;11/05/2023;OLT-3259;ODF-6480;SW-9960;Sí;Sí;Sí;Instalación correcta en nodo.
-IC-2222-A01;Parcona;CUADRILLA 2;15/07/2023;20/07/2023;OLT-1897;ODF-7037;SW-2974;Sí;Sí;Sí;Instalación correcta en nodo.
-IC-3333-A01;Chincha Alta;CUADRILLA 3;11/11/2023;14/11/2023;OLT-7901;ODF-2108;SW-1711;Sí;Sí;Sí;Instalación correcta en nodo.
-IC-4444-A04;El Carmen;CUADRILLA 4;26/01/2023;29/01/2023;OLT-2684;ODF-8534;SW-5557;Sí;Sí;Sí;Instalación correcta en nodo.
+﻿CÓDIGO_NODO;LOCALIDAD;CUADRILLA;Fecha_Inicio;Fecha_Fin;Serie_OLT;OLT_Instalado;Serie_ODF;ODF_Instalado;Serie_SW;SW_Instalado;ITM_Instalado;Empalme_ODF_OK;Reporte_Fotografico;Observaciones
+IC-1111-A01;Ica;CUADRILLA 1;7/05/2023;11/05/2023;OLT-3259;Sí;ODF-6480;Sí;SW-9960;Sí;Sí;Sí;Sí;Instalación correcta en nodo.
+IC-2222-A01;Parcona;CUADRILLA 2;15/07/2023;20/07/2023;OLT-1897;Sí;ODF-7037;Sí;SW-2974;Sí;Sí;Sí;Sí;Instalación correcta en nodo.
+IC-3333-A01;Chincha Alta;CUADRILLA 3;11/11/2023;14/11/2023;OLT-7901;No;ODF-2108;Sí;SW-1711;Sí;Sí;Sí;Sí;Instalación correcta en nodo.
+IC-4444-A04;El Carmen;CUADRILLA 4;26/01/2023;29/01/2023;OLT-2684;Sí;ODF-8534;No;SW-5557;Sí;Sí;Sí;Sí;Instalación correcta en nodo.
