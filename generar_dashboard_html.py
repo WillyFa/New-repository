@@ -1,6 +1,7 @@
 import csv
 import os
 import json
+import base64
 
 output_dir = r"C:\Users\ASUS\.gemini\antigravity\scratch"
 
@@ -35,12 +36,19 @@ def run():
     for r in iao_data: cuad_set.add(r.get("CUADRILLA",""))
     cuadrillas = sorted(list([c for c in cuad_set if c.strip()]))
 
+    # Leer logo y convertir a base64
+    logo_b64 = ""
+    logo_path = os.path.join(output_dir, "Logo covepa.png")
+    if os.path.exists(logo_path):
+        with open(logo_path, "rb") as img_file:
+            logo_b64 = base64.b64encode(img_file.read()).decode("utf-8")
+
     html_content = f"""<!DOCTYPE html>
 <html lang="es" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FTTH Pronatel - Dashboard Analítico Global</title>
+    <title>Control Proyecto FTTH ICA - COVEPA</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -59,11 +67,16 @@ def run():
         body {{ background-color: var(--bg-color); color: var(--text-primary); min-height: 100vh; padding: 1.5rem; 
                background-image: radial-gradient(at 0% 0%, rgba(59,130,246,0.1) 0, transparent 50%), radial-gradient(at 100% 100%, rgba(139,92,246,0.1) 0, transparent 50%); background-attachment: fixed; }}
         
-        .header {{ margin-bottom: 1.5rem; text-align: center; position: relative; display: flex; justify-content: center; align-items: center; }}
-        .header h1 {{ font-size: 2rem; font-weight: 800; background: linear-gradient(to right, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }}
+        .header {{ margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; max-width: 1400px; margin-left: auto; margin-right: auto; padding: 0.5rem 0; }}
+        .header-left {{ display: flex; align-items: center; gap: 1rem; }}
+        .header-logo {{ height: 48px; width: auto; object-fit: contain; }}
+        [data-theme="dark"] .header-logo {{ filter: brightness(0) invert(1); }}
+        .header-title {{ }}
+        .header-title h1 {{ font-size: 1.6rem; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; }}
+        .header-title .subtitle {{ font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }}
         
-        #theme-btn {{ position: absolute; right: 2rem; padding: 0.5rem 1rem; border-radius: 2rem; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; }}
-        #theme-btn:hover {{ border-color: var(--accent-1); }}
+        #theme-btn {{ padding: 0.5rem 1rem; border-radius: 2rem; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }}
+        #theme-btn:hover {{ border-color: var(--accent-1); box-shadow: 0 0 12px rgba(59,130,246,0.2); }}
 
         .filters-panel {{ background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 1rem; padding: 1.5rem; max-width: 1400px; margin: 0 auto 1.5rem auto; display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }}
         .filter-group {{ display: flex; flex-direction: column; gap: 0.4rem; }}
@@ -96,7 +109,13 @@ def run():
 </head>
 <body>
     <div class="header">
-        <h1>Dashboard Integral FTTH - Gilat/Pronatel</h1>
+        <div class="header-left">
+            <img src="data:image/png;base64,{logo_b64}" alt="COVEPA" class="header-logo" />
+            <div class="header-title">
+                <h1>CONTROL PROYECTO FTTH ICA</h1>
+                <span class="subtitle">COVEPA — Panel de Gestión Directiva</span>
+            </div>
+        </div>
         <button id="theme-btn" onclick="toggleTheme()">☀️ Modo Día</button>
     </div>
 
