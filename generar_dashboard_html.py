@@ -38,7 +38,7 @@ def run():
 
     # Leer logo y convertir a base64
     logo_b64 = ""
-    logo_path = os.path.join(output_dir, "Logo covepa.png")
+    logo_path = os.path.join(output_dir, "Logo_covepa.png")
     if os.path.exists(logo_path):
         with open(logo_path, "rb") as img_file:
             logo_b64 = base64.b64encode(img_file.read()).decode("utf-8")
@@ -46,6 +46,7 @@ def run():
     html_content = f"""<!DOCTYPE html>
 <html lang="es" data-theme="dark">
 <head>
+    <link rel="icon" type="image/png" href="data:image/png;base64,{logo_b64}" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control Proyecto FTTH ICA - COVEPA</title>
@@ -208,7 +209,7 @@ def run():
         function initCharts() {{
             cAvances = new Chart(document.getElementById('cAvances'), {{ type: 'bar', data: {{ labels: ["NODO", "PEXT", "IAO"], datasets: [{{ data: [], backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6'], borderRadius: 4 }}] }}, options: {{ indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: {{ legend: {{ display: false }}, datalabels: {{ ...dlOpts, formatter: v => v + '%' }} }}, scales: {{ x: {{ max: 100, grid: {{ color: getGridColor() }} }}, y: {{ grid: {{ display: false }} }} }} }} }});
             cPostesComp = new Chart(document.getElementById('cPostesComp'), {{ type: 'bar', data: {{ labels: ["Requeridos", "Izados"], datasets: [{{ data: [], backgroundColor: ['#ef4444', '#10b981'], borderRadius: 4 }}] }}, options: {{ responsive: true, maintainAspectRatio: false, plugins: {{ legend: {{ display: false }}, datalabels: dlOpts }}, scales: {{ y: {{ ticks: {{ precision: 0 }}, grid: {{ color: getGridColor() }} }}, x: {{ grid: {{ display: false }} }} }} }} }});
-            cNodo = new Chart(document.getElementById('cNodo'), {{ type: 'bar', data: {{ labels: ["OLT", "ODF", "SW", "ITM"], datasets: [{{ label: 'Instalados', data: [], backgroundColor: '#22d3ee', borderRadius: 4 }}, {{ label: 'Faltantes', data: [], backgroundColor: '#f43f5e', borderRadius: 4 }}] }}, options: {{ responsive: true, maintainAspectRatio: false, plugins: {{ legend: {{ position: 'bottom', labels: {{ padding: 10, boxWidth: 12 }} }}, datalabels: {{ ...dlOpts, display: (ctx) => ctx.dataset.data[ctx.dataIndex] > 0 }} }}, scales: {{ x: {{ stacked: true, grid: {{ display: false }} }}, y: {{ stacked: true, ticks: {{ precision: 0 }}, grid: {{ color: getGridColor() }} }} }} }} }});
+            cNodo = new Chart(document.getElementById('cNodo'), {{ type: 'bar', data: {{ labels: ["OLT", "ODF", "SW", "ITM (x2)"], datasets: [{{ label: 'Instalados', data: [], backgroundColor: '#22d3ee', borderRadius: 4 }}, {{ label: 'Faltantes', data: [], backgroundColor: '#f43f5e', borderRadius: 4 }}] }}, options: {{ responsive: true, maintainAspectRatio: false, plugins: {{ legend: {{ position: 'bottom', labels: {{ padding: 10, boxWidth: 12 }} }}, datalabels: {{ ...dlOpts, display: (ctx) => ctx.dataset.data[ctx.dataIndex] > 0 }} }}, scales: {{ x: {{ stacked: true, grid: {{ display: false }} }}, y: {{ stacked: true, ticks: {{ precision: 0 }}, grid: {{ color: getGridColor() }} }} }} }} }});
             cEquiposPext = new Chart(document.getElementById('cEquiposPext'), {{ type: 'bar', data: {{ labels: ["CTOs", "Mufas ER", "Mufas Dist."], datasets: [{{ data: [], backgroundColor: ['#f59e0b', '#06b6d4', '#a855f7'], borderRadius: 4 }}] }}, options: {{ responsive: true, maintainAspectRatio: false, plugins: {{ legend: {{ display: false }}, datalabels: dlOpts }}, scales: {{ y: {{ ticks: {{ precision: 0 }}, grid: {{ color: getGridColor() }} }}, x: {{ grid: {{ display: false }} }} }} }} }});
             cTipos = new Chart(document.getElementById('cTipos'), {{ type: 'bar', data: {{ labels: [], datasets: [{{ data: [], backgroundColor: '#fb923c', borderRadius: 4 }}] }}, options: {{ indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: {{ legend: {{ display: false }}, datalabels: dlOpts }}, scales: {{ x: {{ ticks: {{ precision: 0 }}, grid: {{ color: getGridColor() }} }}, y: {{ grid: {{ display: false }} }} }} }} }});
             cCuadrillas = new Chart(document.getElementById('cCuadrillas'), {{ type: 'bar', data: {{ labels: [], datasets: [{{ data: [], backgroundColor: '#a78bfa', borderRadius: 4 }}] }}, options: {{ responsive: true, maintainAspectRatio: false, plugins: {{ legend: {{ display: false }}, datalabels: dlOpts }}, scales: {{ y: {{ ticks: {{ precision: 0 }}, grid: {{ color: getGridColor() }} }}, x: {{ grid: {{ display: false }} }} }} }} }});
@@ -291,13 +292,17 @@ def run():
             document.getElementById('valIAO').innerText = iaosAbarcadasValidas.length;
             
             // Calculo de Avances (%) - Detalle por equipo NODO usando columnas _Instalado
-            let totalEquiposEsperados = fNodo.length * 4; let equiposInstalados = 0;
+            // OLT, ODF, SW = 1 por localidad. ITM = 2 por localidad
+            let totalITMEsperados = fNodo.length * 2;
+            let totalEquiposEsperados = fNodo.length * 3 + totalITMEsperados;
+            let equiposInstalados = 0;
             let nOLT = 0, nODF = 0, nSW = 0, nITM = 0;
             fNodo.forEach(n => {{
                 if(n.OLT_Instalado === 'Sí') {{ equiposInstalados++; nOLT++; }}
                 if(n.ODF_Instalado === 'Sí') {{ equiposInstalados++; nODF++; }}
                 if(n.SW_Instalado === 'Sí') {{ equiposInstalados++; nSW++; }}
-                if(n.ITM_Instalado === 'Sí') {{ equiposInstalados++; nITM++; }}
+                let itmVal = parseInt(n.ITM_Instalados) || 0;
+                nITM += itmVal; equiposInstalados += itmVal;
             }});
             let pctNodo = totalEquiposEsperados > 0 ? Math.round((equiposInstalados / totalEquiposEsperados) * 100) : 0;
             let pctPext = postesReq > 0 ? Math.round((postesIza / postesReq) * 100) : (fPext.length > 0 ? 100 : 0);
@@ -311,7 +316,7 @@ def run():
             // Actualizar Gráficas
             cAvances.data.datasets[0].data = [pctNodo, pctPext, pctIao]; cAvances.update();
             cPostesComp.data.datasets[0].data = [postesReq, postesIza]; cPostesComp.update();
-            cNodo.data.datasets[0].data = [nOLT, nODF, nSW, nITM]; cNodo.data.datasets[1].data = [fNodo.length - nOLT, fNodo.length - nODF, fNodo.length - nSW, fNodo.length - nITM]; cNodo.update();
+            cNodo.data.datasets[0].data = [nOLT, nODF, nSW, nITM]; cNodo.data.datasets[1].data = [fNodo.length - nOLT, fNodo.length - nODF, fNodo.length - nSW, totalITMEsperados - nITM]; cNodo.update();
             cEquiposPext.data.datasets[0].data = [ctos, mufasER, mufasDist]; cEquiposPext.update();
 
             let countTipos = {{}}; let countCuadrillas = {{}};
