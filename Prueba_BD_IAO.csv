@@ -1,17 +1,20 @@
-﻿ID_Localidad;Nombre_Localidad;ID_IAO;Tipo_IAO;Cuadrilla_IAO;Fecha_Inicio;Fecha_Fin;Metraje_Cable_Drop;Armella_y_Templador_OK;Recorrido_Grapas_OK;Aterramiento_OK;Ambiente_Instalacion;Serie_Eq_1_ONT;Serie_Eq_2_Switch;Serie_Eq_3_Regleta;Serie_Eq_4_Adicional;Reporte_Fotografico;Observaciones
-LOC-001;San Miguel de Pallaques;LOC-001-CS01-1;CS01;Cuadrilla IAO X;07/06/2023;08/06/2023;88;Sí;Sí;Sí;Sala de Computo;ONT-32432;SWA-53990;REG-78258;-;Sí;Empalme de drop y conexión correctas.
-LOC-001;San Miguel de Pallaques;LOC-001-IE02-2;IE02;Cuadrilla IAO X;03/06/2023;06/06/2023;60;Sí;Sí;Sí;Sala de Computo;ONT-13948;SWA-13661;REG-18510;-;Sí;Empalme de drop y conexión correctas.
-LOC-002;Huamachuco;LOC-002-CS01-1;CS01;Cuadrilla IAO Y;18/08/2023;21/08/2023;68;Sí;Sí;Sí;Sala de Computo;ONT-56860;SWA-90528;REG-69857;-;Sí;Empalme de drop y conexión correctas.
-LOC-002;Huamachuco;LOC-002-IE01-2;IE01;Cuadrilla IAO Z;20/08/2023;21/08/2023;102;Sí;Sí;Sí;Sala RF;ONT-83908;SWA-84767;REG-15039;-;Sí;Empalme de drop y conexión correctas.
-LOC-002;Huamachuco;LOC-002-C001-3;C001;Cuadrilla IAO X;20/08/2023;23/08/2023;130;Sí;Sí;Sí;Sala RF;ONT-61121;SWA-97974;REG-84624;-;Sí;Empalme de drop y conexión correctas.
-LOC-002;Huamachuco;LOC-002-IE03-4;IE03;Cuadrilla IAO Z;19/08/2023;20/08/2023;95;Sí;Sí;Sí;Sala de Computo;ONT-29503;SWA-35172;REG-42518;-;Sí;Empalme de drop y conexión correctas.
-LOC-002;Huamachuco;LOC-002-IE02-5;IE02;Cuadrilla IAO Y;16/08/2023;17/08/2023;120;Sí;Sí;Sí;Sala de Computo;ONT-32922;SWA-65781;REG-18065;-;Sí;Empalme de drop y conexión correctas.
-LOC-003;Celendin;LOC-003-IE01-1;IE01;Cuadrilla IAO Y;01/12/2023;04/12/2023;70;Sí;Sí;Sí;Sala de Computo;ONT-44022;SWA-72853;REG-14726;-;Sí;Empalme de drop y conexión correctas.
-LOC-003;Celendin;LOC-003-IE01-2;IE01;Cuadrilla IAO Y;03/12/2023;04/12/2023;86;Sí;Sí;Sí;Sala de Computo;ONT-64349;SWA-92485;REG-33613;-;Sí;Empalme de drop y conexión correctas.
-LOC-003;Celendin;LOC-003-IE02-3;IE02;Cuadrilla IAO Z;01/12/2023;04/12/2023;140;Sí;Sí;Sí;Sala RF;ONT-90066;SWA-40909;REG-63299;-;Sí;Empalme de drop y conexión correctas.
-LOC-004;Cutervo;LOC-004-IE02-1;IE02;Cuadrilla IAO Z;14/02/2023;17/02/2023;108;Sí;Sí;Sí;Sala RF;ONT-36895;SWA-83058;REG-66275;-;Sí;Empalme de drop y conexión correctas.
-LOC-004;Cutervo;LOC-004-CS01-2;CS01;Cuadrilla IAO Z;15/02/2023;18/02/2023;146;Sí;Sí;Sí;Sala de Computo;ONT-46317;SWA-16769;REG-58893;-;Sí;Empalme de drop y conexión correctas.
-LOC-004;Cutervo;LOC-004-C001-3;C001;Cuadrilla IAO X;13/02/2023;15/02/2023;143;Sí;Sí;Sí;Sala de Computo;ONT-20525;SWA-76411;REG-17960;-;Sí;Empalme de drop y conexión correctas.
-LOC-004;Cutervo;LOC-004-C001-4;C001;Cuadrilla IAO Z;16/02/2023;17/02/2023;59;Sí;Sí;Sí;Sala RF;ONT-47480;SWA-13239;REG-72845;-;Sí;Empalme de drop y conexión correctas.
-LOC-005;Chota;LOC-005-C001-1;C001;Cuadrilla IAO Z;02/06/2023;03/06/2023;126;Sí;Sí;Sí;Sala RF;ONT-93554;SWA-24396;REG-55227;-;Sí;Empalme de drop y conexión correctas.
-LOC-005;Chota;LOC-005-IE03-2;IE03;Cuadrilla IAO Z;01/06/2023;03/06/2023;109;Sí;Sí;Sí;Sala de Computo;ONT-93422;SWA-65771;REG-28096;-;Sí;Empalme de drop y conexión correctas.
+﻿CÓDIGO_NODO;DEPARTAMENTO;PROVINCIA;LOCALIDAD;CODIGO_IAO;CUADRILLA;Fecha_Inicio;Fecha_Fin;Metraje_Cable_Drop;Aterramiento_OK;Ambiente_Instalacion;Serie_Eq_1_ONT;Serie_Eq_2_Switch;Serie_Eq_3_Mikrotik;Serie_Eq_3_PPLINK;Reporte_Fotografico;Observaciones
+IC-1111-A01;ICA;ICA;Ica;LOC-01-CS01;CUADRILLA 1;7/06/2023;8/06/2023;88;Sí;Sala de Computo;ONT-32432;SWA-53990;REG-78258;PPLINK-111;Sí;Empalme de drop y conexión correctas.
+IC-1111-A01;ICA;ICA;Ica;LOC-01-IE01;CUADRILLA 1;3/06/2023;6/06/2023;60;Sí;Sala de Computo;ONT-13948;SWA-13661;REG-18510;PPLINK-111;Sí;Empalme de drop y conexión correctas.
+IC-2222-A01;ICA;ICA;Parcona;LOC-02-CS01;CUADRILLA 1;18/08/2023;21/08/2023;68;Sí;Sala de Computo;ONT-56860;SWA-90528;REG-69857;PPLINK-222;Sí;Empalme de drop y conexión correctas.
+IC-2222-A01;ICA;ICA;Parcona;LOC-02-IE01;CUADRILLA 1;20/08/2023;21/08/2023;102;Sí;Sala RF;ONT-83908;SWA-84767;REG-15039;PPLINK-222;Sí;Empalme de drop y conexión correctas.
+IC-3333-A01;ICA;CHINCHA;Chincha Alta;LOC-03-C001;CUADRILLA 2;20/08/2023;23/08/2023;130;Sí;Sala RF;ONT-61121;SWA-97974;REG-84624;PPLINK-333;Sí;Empalme de drop y conexión correctas.
+IC-3333-A01;ICA;CHINCHA;Chincha Alta;LOC-03-IE01;CUADRILLA 2;19/08/2023;20/08/2023;95;Sí;Sala de Computo;ONT-29503;SWA-35172;REG-42518;PPLINK-333;Sí;Empalme de drop y conexión correctas.
+IC-4444-A01;ICA;CHINCHA;El Carmen;LOC-04-IE01;CUADRILLA 2;16/08/2023;17/08/2023;120;Sí;Sala de Computo;ONT-32922;SWA-65781;REG-18065;PPLINK-444;Sí;Empalme de drop y conexión correctas.
+IC-4444-A01;ICA;CHINCHA;El Carmen;LOC-04-IE02;CUADRILLA 2;1/12/2023;4/12/2023;70;Sí;Sala de Computo;ONT-44022;SWA-72853;REG-14726;PPLINK-444;Sí;Empalme de drop y conexión correctas.
+IC-5555-A01;ICA;PISCO;Independencia;LOC-05-IE01;CUADRILLA 3;3/12/2023;4/12/2023;86;Sí;Sala de Computo;ONT-64349;SWA-92485;REG-33613;PPLINK-555;Sí;Empalme de drop y conexión correctas.
+IC-5555-A01;ICA;PISCO;Independencia;LOC-05-IE02;CUADRILLA 3;1/12/2023;4/12/2023;140;Sí;Sala RF;ONT-90066;SWA-40909;REG-63299;PPLINK-555;Sí;Empalme de drop y conexión correctas.
+IC-6666-A01;ICA;PISCO;San Clemente;LOC-06-IE01;CUADRILLA 3;14/02/2023;17/02/2023;108;Sí;Sala RF;ONT-36895;SWA-83058;REG-66275;PPLINK-666;Sí;Empalme de drop y conexión correctas.
+IC-6666-A01;ICA;PISCO;San Clemente;LOC-06-CS01;CUADRILLA 3;15/02/2023;18/02/2023;146;Sí;Sala de Computo;ONT-46317;SWA-16769;REG-58893;PPLINK-666;Sí;Empalme de drop y conexión correctas.
+IC-7777-A01;ICA;PALPA;Llipata;LOC-07-C001;CUADRILLA 4;13/02/2023;15/02/2023;143;Sí;Sala de Computo;ONT-20525;SWA-76411;REG-17960;PPLINK-777;Sí;Empalme de drop y conexión correctas.
+IC-7777-A01;ICA;PALPA;Llipata;LOC-07-CS01;CUADRILLA 4;16/02/2023;17/02/2023;59;Sí;Sala RF;ONT-47480;SWA-13239;REG-72845;PPLINK-777;Sí;Empalme de drop y conexión correctas.
+IC-8888-A01;ICA;PALPA;Santa Cruz;LOC-08-C001;CUADRILLA 4;2/06/2023;3/06/2023;126;Sí;Sala RF;ONT-93554;SWA-24396;REG-55227;PPLINK-888;Sí;Empalme de drop y conexión correctas.
+IC-8888-A01;ICA;PALPA;Santa Cruz;LOC-08-IE01;CUADRILLA 4;1/06/2023;3/06/2023;109;Sí;Sala de Computo;ONT-93422;SWA-65771;REG-28096;PPLINK-888;Sí;Empalme de drop y conexión correctas.
+;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
