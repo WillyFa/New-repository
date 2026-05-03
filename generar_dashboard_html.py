@@ -280,7 +280,7 @@ def run():
 </html>
 """
 
-    with open(os.path.join(output_dir, "dashboard.html"), "w", encoding="utf-8") as f:
+    with open(os.path.join(output_dir, "index.html"), "w", encoding="utf-8") as f:
         f.write(html_content)
     print("Dashboard HTML ajustado (Gráficos más pequeños y claros) generado.")
 
