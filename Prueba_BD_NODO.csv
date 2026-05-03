@@ -1,0 +1,6 @@
+﻿ID_Localidad;Nombre_Localidad;Cuadrilla_NODO;Fecha_Inicio;Fecha_Fin;Serie_OLT;Serie_ODF;Serie_SW;Empalme_ODF_OK;Reporte_Fotografico;Observaciones
+LOC-001;San Miguel de Pallaques;Cuadrilla NODO A;07/05/2023;11/05/2023;OLT-3259;ODF-6480;SW-9960;Sí;Sí;Instalación correcta en nodo.
+LOC-002;Huamachuco;Cuadrilla NODO A;15/07/2023;20/07/2023;OLT-1897;ODF-7037;SW-2974;Sí;Sí;Instalación correcta en nodo.
+LOC-003;Celendin;Cuadrilla NODO B;11/11/2023;14/11/2023;OLT-7901;ODF-2108;SW-1711;Sí;Sí;Instalación correcta en nodo.
+LOC-004;Cutervo;Cuadrilla NODO A;26/01/2023;29/01/2023;OLT-2684;ODF-8534;SW-5557;Sí;Sí;Instalación correcta en nodo.
+LOC-005;Chota;Cuadrilla NODO A;10/05/2023;12/05/2023;OLT-8787;ODF-9934;SW-3178;Sí;Sí;Instalación correcta en nodo.

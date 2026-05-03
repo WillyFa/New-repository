@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FTTH Pronatel - Dashboard Directivo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-1: #3b82f6;
+            --accent-2: #10b981;
+            --accent-3: #8b5cf6;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .header { margin-bottom: 2rem; text-align: center; }
+        .header h1 { font-size: 2.2rem; font-weight: 800; background: linear-gradient(to right, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem; }
+        
+        .filter-container { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+        .filter-container label { font-weight: 600; color: var(--text-secondary); font-size: 0.9rem; }
+        select {
+            background-color: rgba(15, 23, 42, 0.8);
+            color: var(--text-primary);
+            border: 1px solid var(--accent-1);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .dashboard-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1rem; max-width: 1400px; margin: 0 auto; }
+        
+        .card {
+            background: var(--card-bg); backdrop-filter: blur(12px); border: 1px solid var(--card-border);
+            border-radius: 1rem; padding: 1.2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .kpi-card { grid-column: span 4; text-align: center; padding: 1.5rem 1rem; }
+        @media (max-width: 1024px) { .kpi-card { grid-column: span 12; } }
+
+        .kpi-value { font-size: 2.5rem; font-weight: 800; margin: 0.3rem 0; color: var(--text-primary); transition: opacity 0.3s ease; }
+        .kpi-label { color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; font-weight: 600; }
+
+        .kpi-1 .kpi-value { color: var(--accent-1); }
+        .kpi-2 .kpi-value { color: var(--accent-2); }
+        .kpi-3 .kpi-value { color: var(--accent-3); }
+
+        /* REDUCED SIZE CHART CONTAINERS */
+        .chart-container { grid-column: span 4; min-height: 250px; display: flex; flex-direction: column; }
+        .chart-wrapper { position: relative; flex-grow: 1; height: 100%; min-height: 200px; }
+        @media (max-width: 1024px) { .chart-container { grid-column: span 12; min-height: 300px; } }
+        
+        .chart-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.8rem; color: var(--text-primary); text-align: center; }
+
+        .table-container { grid-column: span 12; margin-top: 1rem; padding: 1.5rem; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 0.8rem; border-bottom: 1px solid var(--card-border); }
+        th { color: var(--accent-1); font-weight: 600; font-size: 0.85rem; }
+        td { color: var(--text-primary); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Control Estratégico FTTH</h1>
+        <div class="filter-container">
+            <label for="localidadFilter">📍 Filtrar por Localidad:</label>
+            <select id="localidadFilter" onchange="updateDashboard()">
+                <option value="ALL">🌐 Todas las Localidades</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- KPIs -->
+        <div class="card kpi-card kpi-1">
+            <div class="kpi-label">Fibra Óptica Desplegada</div>
+            <div class="kpi-value" id="valFO">0 <span style="font-size:1.2rem">m</span></div>
+        </div>
+        <div class="card kpi-card kpi-2">
+            <div class="kpi-label">Total IAOs Instaladas</div>
+            <div class="kpi-value" id="valIAO">0</div>
+        </div>
+        <div class="card kpi-card kpi-3">
+            <div class="kpi-label">Postes Intervenidos</div>
+            <div class="kpi-value" id="valPostes">0</div>
+        </div>
+
+        <!-- Charts en 3 columnas para que sean más pequeños -->
+        <div class="card chart-container">
+            <h2 class="chart-title">Tipos de IAO (Barras Horizontales)</h2>
+            <div class="chart-wrapper"><canvas id="chartTipos"></canvas></div>
+        </div>
+
+        <div class="card chart-container">
+            <h2 class="chart-title">Postes Usados (Dona)</h2>
+            <div class="chart-wrapper"><canvas id="chartPostes"></canvas></div>
+        </div>
+
+        <div class="card chart-container">
+            <h2 class="chart-title">IAOs por Cuadrilla (Barras)</h2>
+            <div class="chart-wrapper"><canvas id="chartCuadrillas"></canvas></div>
+        </div>
+        
+        <!-- Tabla de Detalle -->
+        <div class="card table-container" id="detailsSection" style="display: none;">
+            <h2 class="chart-title" style="text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">📋 Detalle Local</h2>
+            <table id="iaoTable">
+                <thead>
+                    <tr>
+                        <th>ID IAO</th>
+                        <th>Tipo</th>
+                        <th>Cuadrilla</th>
+                        <th>Drop (m)</th>
+                        <th>Serie ONT</th>
+                        <th>Ambiente</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const rawPext = [{"ID_Localidad": "LOC-001", "Nombre_Localidad": "San Miguel de Pallaques", "Cuadrilla_PEXT": "Cuadrilla PEXT 1", "Fecha_Inicio": "14/05/2023", "Fecha_Fin": "02/06/2023", "Metraje_Promedio_FO": "2303", "Span_Promedio_FO": "73", "Cant_Postes_Nuevos": "27", "Cant_Postes_Electricos": "29", "Cant_Postes_Terceros": "0", "Cant_Mufas_Dist": "6", "Cant_CTO_NAPs": "15", "Splitter_1x2_Cant": "1", "Splitter_1x4_Cant": "6", "Splitter_1x8_Cant": "15", "Reservas_Mantenimiento_Crucetas": "5", "Observaciones": "Tendido a\u00e9reo finalizado con uso de postes de MT."}, {"ID_Localidad": "LOC-002", "Nombre_Localidad": "Huamachuco", "Cuadrilla_PEXT": "Cuadrilla PEXT 1", "Fecha_Inicio": "25/07/2023", "Fecha_Fin": "15/08/2023", "Metraje_Promedio_FO": "3976", "Span_Promedio_FO": "70", "Cant_Postes_Nuevos": "12", "Cant_Postes_Electricos": "40", "Cant_Postes_Terceros": "7", "Cant_Mufas_Dist": "6", "Cant_CTO_NAPs": "9", "Splitter_1x2_Cant": "0", "Splitter_1x4_Cant": "6", "Splitter_1x8_Cant": "9", "Reservas_Mantenimiento_Crucetas": "15", "Observaciones": "Tendido a\u00e9reo finalizado con uso de postes de MT."}, {"ID_Localidad": "LOC-003", "Nombre_Localidad": "Celendin", "Cuadrilla_PEXT": "Cuadrilla PEXT 1", "Fecha_Inicio": "21/11/2023", "Fecha_Fin": "29/11/2023", "Metraje_Promedio_FO": "4287", "Span_Promedio_FO": "69", "Cant_Postes_Nuevos": "15", "Cant_Postes_Electricos": "33", "Cant_Postes_Terceros": "10", "Cant_Mufas_Dist": "2", "Cant_CTO_NAPs": "5", "Splitter_1x2_Cant": "1", "Splitter_1x4_Cant": "2", "Splitter_1x8_Cant": "5", "Reservas_Mantenimiento_Crucetas": "11", "Observaciones": "Tendido a\u00e9reo finalizado con uso de postes de MT."}, {"ID_Localidad": "LOC-004", "Nombre_Localidad": "Cutervo", "Cuadrilla_PEXT": "Cuadrilla PEXT 3", "Fecha_Inicio": "31/01/2023", "Fecha_Fin": "12/02/2023", "Metraje_Promedio_FO": "4370", "Span_Promedio_FO": "79", "Cant_Postes_Nuevos": "26", "Cant_Postes_Electricos": "37", "Cant_Postes_Terceros": "10", "Cant_Mufas_Dist": "3", "Cant_CTO_NAPs": "15", "Splitter_1x2_Cant": "1", "Splitter_1x4_Cant": "3", "Splitter_1x8_Cant": "15", "Reservas_Mantenimiento_Crucetas": "15", "Observaciones": "Tendido a\u00e9reo finalizado con uso de postes de MT."}, {"ID_Localidad": "LOC-005", "Nombre_Localidad": "Chota", "Cuadrilla_PEXT": "Cuadrilla PEXT 3", "Fecha_Inicio": "16/05/2023", "Fecha_Fin": "31/05/2023", "Metraje_Promedio_FO": "3583", "Span_Promedio_FO": "69", "Cant_Postes_Nuevos": "21", "Cant_Postes_Electricos": "36", "Cant_Postes_Terceros": "8", "Cant_Mufas_Dist": "3", "Cant_CTO_NAPs": "12", "Splitter_1x2_Cant": "0", "Splitter_1x4_Cant": "3", "Splitter_1x8_Cant": "12", "Reservas_Mantenimiento_Crucetas": "10", "Observaciones": "Tendido a\u00e9reo finalizado con uso de postes de MT."}];
+        const rawIao = [{"ID_Localidad": "LOC-001", "Nombre_Localidad": "San Miguel de Pallaques", "ID_IAO": "LOC-001-CS01-1", "Tipo_IAO": "CS01", "Cuadrilla_IAO": "Cuadrilla IAO X", "Fecha_Inicio": "07/06/2023", "Fecha_Fin": "08/06/2023", "Metraje_Cable_Drop": "88", "Armella_y_Templador_OK": "S\u00ed", "Recorrido_Grapas_OK": "S\u00ed", "Aterramiento_OK": "S\u00ed", "Ambiente_Instalacion": "Sala de Computo", "Serie_Eq_1_ONT": "ONT-32432", "Serie_Eq_2_Switch": "SWA-53990", "Serie_Eq_3_Regleta": "REG-78258", "Serie_Eq_4_Adicional": "-", "Reporte_Fotografico": "S\u00ed", "Observaciones": "Empalme de drop y conexi\u00f3n correctas."}, {"ID_Localidad": "LOC-001", "Nombre_Localidad": "San Miguel de Pallaques", "ID_IAO": "LOC-001-IE02-2", "Tipo_IAO": "IE02", "Cuadrilla_IAO": "Cuadrilla IAO X", "Fecha_Inicio": "03/06/2023", "Fecha_Fin": "06/06/2023", "Metraje_Cable_Drop": "60", "Armella_y_Templador_OK": "S\u00ed", "Recorrido_Grapas_OK": "S\u00ed", "Aterramiento_OK": "S\u00ed", "Ambiente_Instalacion": "Sala de Computo", "Serie_Eq_1_ONT": "ONT-13948", "Serie_Eq_2_Switch": "SWA-13661", "Serie_Eq_3_Regleta": "REG-18510", "Serie_Eq_4_Adicional": "-", "Reporte_Fotografico": "S\u00ed", "Observaciones": "Empalme de drop y conexi\u00f3n correctas."}, {"ID_Localidad": "LOC-002", "Nombre_Localidad": "Huamachuco", "ID_IAO": "LOC-002-CS01-1", "Tipo_IAO": "CS01", "Cuadrilla_IAO": "Cuadrilla IAO Y", "Fecha_Inicio": "18/08/2023", "Fecha_Fin": "21/08/2023", "Metraje_Cable_Drop": "68", "Armella_y_Templador_OK": "S\u00ed", "Recorrido_Grapas_OK": "S\u00ed", "Aterramiento_OK": "S\u00ed", "Ambiente_Instalacion": "Sala de Computo", "Serie_Eq_1_ONT": "ONT-56860", "Serie_Eq_2_Switch": "SWA-90528", "Serie_Eq_3_Regleta": "REG-69857", "Serie_Eq_4_Adicional": "-", "Reporte_Fotografico": "S\u00ed", "Observaciones": "Empalme de drop y conexi\u00f3n correctas."}, {"ID_Localidad": "LOC-002", "Nombre_Localidad": "Huamachuco", "ID_IAO": "LOC-002-IE01-2", "Tipo_IAO": "IE01", "Cuadrilla_IAO": "Cuadrilla IAO Z", "Fecha_Inicio": "20/08/2023", "Fecha_Fin": "21/08/2023", "Metraje_Cable_Drop": "102", "Armella_y_Templador_OK": "S\u00ed", "Recorrido_Grapas_OK": "S\u00ed", "Aterramiento_OK": "S\u00ed", "Ambiente_Instalacion": "Sala RF", "Serie_Eq_1_ONT": "ONT-83908", "Serie_Eq_2_Switch": "SWA-84767", "Serie_Eq_3_Regleta": "REG-15039", "Serie_Eq_4_Adicional": "-", "Reporte_Fotografico": "S\u00ed", "Observaciones": "Empalme de drop y conexi\u00f3n correctas."}, {"ID_Localidad": "LOC-002", "Nombre_Localidad": "Huamachuco", "ID_IAO": "LOC-002-C001-3", "Tipo_IAO": "C001", "Cuadrilla_IAO": "Cuadrilla IAO X", "Fecha_Inicio": "20/08/2023", "Fecha_Fin": "23/08/2023", "Metraje_Cable_Drop": "130", "Armella_y_Templador_OK": "S\u00ed", "Recorrido_Grapas_OK": "S\u00ed", "Aterramiento_OK": "S\u00ed", "Ambiente_Instalacion": "Sala RF", "Serie_Eq_1_ONT": "ONT-61121", "Serie_Eq_2_Switch": "SWA-97974", "Serie_Eq_3_Regleta": "REG-84624", "Serie_Eq_4_Adicional": "-", "Reporte_Fotografico": "S\u00ed", "Observaciones": "Empalme de drop y conexi\u00f3n correctas."}, {"ID_Localidad": "LOC-002", "Nombre_Localidad": "Huamachuco", "ID_IAO": "LOC-002-IE03-4", "Tipo_IAO": "IE03", "Cuadrilla_IAO": "Cuadrilla IAO Z", "Fecha_Inicio": "19/08/2023", "Fecha_Fin": "20/08/2023", "Metraje_Cable_Drop": "95", "Armella_y_Templador_OK": "S\u00ed", "Recorrido_Grapas_OK": "S\u00ed", "Aterramiento_OK": "S\u00ed", "Ambiente_Instalacion": "Sala de Computo", "Serie_Eq_1_ONT": "ONT-29503", "Serie_Eq_2_Switch": "SWA-35172", "Serie_Eq_3_Regleta": "REG-42518", "Serie_Eq_4_Adicional": "-", "Reporte_Fotografico": "S\u00ed", "Observaciones": "Empalme de drop y conexi\u00f3n correctas."}, {"ID_Localidad": "LOC-002", "Nombre_Localidad": "Huamachuco", "ID_IAO": "LOC-002-IE02-5", "Tipo_IAO": "IE02", "Cuadrilla_IAO": "Cuadrilla IAO Y", "Fecha_Inicio": "16/08/2023", "Fecha_Fin": "17/08/2023", "Metraje_Cable_Drop": "120", "Armella_y_Templador_OK": "S\u00ed", "Recorrido_Grapas_OK": "S\u00ed", "Aterramiento_OK": "S\u00ed", "Ambiente_Instalacion": "Sala de Computo", "Serie_Eq_1_ONT": "ONT-32922", "Serie_Eq_2_Switch": "SWA-65781", "Serie_Eq_3_Regleta": "REG-18065", "Serie_Eq_4_Adicional": "-", "Reporte_Fotografico": "S\u00ed", "Observaciones": "Empalme de drop y conexi\u00f3n correctas."}, {"ID_Localidad": "LOC-003", "Nombre_Localidad": "Celendin", "ID_IAO": "LOC-003-IE01-1", "Tipo_IAO": "IE01", "Cuadrilla_IAO": "Cuadrilla IAO Y", "Fecha_Inicio": "01/12/2023", "Fecha_Fin": "04/12/2023", "Metraje_Cable_Drop": "70", "Armella_y_Templador_OK": "S\u00ed", "Recorrido_Grapas_OK": "S\u00ed", "Aterramiento_OK": "S\u00ed", "Ambiente_Instalacion": "Sala de Computo", "Serie_Eq_1_ONT": "ONT-44022", "Serie_Eq_2_Switch": "SWA-72853", "Serie_Eq_3_Regleta": "REG-14726", "Serie_Eq_4_Adicional": "-", "Reporte_Fotografico": "S\u00ed", "Observaciones": "Empalme de drop y conexi\u00f3n correctas."}, {"ID_Localidad": "LOC-003", "Nombre_Localidad": "Celendin", "ID_IAO": "LOC-003-IE01-2", "Tipo_IAO": "IE01", "Cuadrilla_IAO": "Cuadrilla IAO Y", "Fecha_Inicio": "03/12/2023", "Fecha_Fin": "04/12/2023", "Metraje_Cable_Drop": "86", "Armella_y_Templador_OK": "S\u00ed", "Recorrido_Grapas_OK": "S\u00ed", "Aterramiento_OK": "S\u00ed", "Ambiente_Instalacion": "Sala de Computo", "Serie_Eq_1_ONT": "ONT-64349", "Serie_Eq_2_Switch": "SWA-92485", "Serie_Eq_3_Regleta": "REG-33613", "Serie_Eq_4_Adicional": "-", "Reporte_Fotografico": "S\u00ed", "Observaciones": "Empalme de drop y conexi\u00f3n correctas."}, {"ID_Localidad": "LOC-003", "Nombre_Localidad": "Celendin", "ID_IAO": "LOC-003-IE02-3", "Tipo_IAO": "IE02", "Cuadrilla_IAO": "Cuadrilla IAO Z", "Fecha_Inicio": "01/12/2023", "Fecha_Fin": "04/12/2023", "Metraje_Cable_Drop": "140", "Armella_y_Templador_OK": "S\u00ed", "Recorrido_Grapas_OK": "S\u00ed", "Aterramiento_OK": "S\u00ed", "Ambiente_Instalacion": "Sala RF", "Serie_Eq_1_ONT": "ONT-90066", "Serie_Eq_2_Switch": "SWA-40909", "Serie_Eq_3_Regleta": "REG-63299", "Serie_Eq_4_Adicional": "-", "Reporte_Fotografico": "S\u00ed", "Observaciones": "Empalme de drop y conexi\u00f3n correctas."}, {"ID_Localidad": "LOC-004", "Nombre_Localidad": "Cutervo", "ID_IAO": "LOC-004-IE02-1", "Tipo_IAO": "IE02", "Cuadrilla_IAO": "Cuadrilla IAO Z", "Fecha_Inicio": "14/02/2023", "Fecha_Fin": "17/02/2023", "Metraje_Cable_Drop": "108", "Armella_y_Templador_OK": "S\u00ed", "Recorrido_Grapas_OK": "S\u00ed", "Aterramiento_OK": "S\u00ed", "Ambiente_Instalacion": "Sala RF", "Serie_Eq_1_ONT": "ONT-36895", "Serie_Eq_2_Switch": "SWA-83058", "Serie_Eq_3_Regleta": "REG-66275", "Serie_Eq_4_Adicional": "-", "Reporte_Fotografico": "S\u00ed", "Observaciones": "Empalme de drop y conexi\u00f3n correctas."}, {"ID_Localidad": "LOC-004", "Nombre_Localidad": "Cutervo", "ID_IAO": "LOC-004-CS01-2", "Tipo_IAO": "CS01", "Cuadrilla_IAO": "Cuadrilla IAO Z", "Fecha_Inicio": "15/02/2023", "Fecha_Fin": "18/02/2023", "Metraje_Cable_Drop": "146", "Armella_y_Templador_OK": "S\u00ed", "Recorrido_Grapas_OK": "S\u00ed", "Aterramiento_OK": "S\u00ed", "Ambiente_Instalacion": "Sala de Computo", "Serie_Eq_1_ONT": "ONT-46317", "Serie_Eq_2_Switch": "SWA-16769", "Serie_Eq_3_Regleta": "REG-58893", "Serie_Eq_4_Adicional": "-", "Reporte_Fotografico": "S\u00ed", "Observaciones": "Empalme de drop y conexi\u00f3n correctas."}, {"ID_Localidad": "LOC-004", "Nombre_Localidad": "Cutervo", "ID_IAO": "LOC-004-C001-3", "Tipo_IAO": "C001", "Cuadrilla_IAO": "Cuadrilla IAO X", "Fecha_Inicio": "13/02/2023", "Fecha_Fin": "15/02/2023", "Metraje_Cable_Drop": "143", "Armella_y_Templador_OK": "S\u00ed", "Recorrido_Grapas_OK": "S\u00ed", "Aterramiento_OK": "S\u00ed", "Ambiente_Instalacion": "Sala de Computo", "Serie_Eq_1_ONT": "ONT-20525", "Serie_Eq_2_Switch": "SWA-76411", "Serie_Eq_3_Regleta": "REG-17960", "Serie_Eq_4_Adicional": "-", "Reporte_Fotografico": "S\u00ed", "Observaciones": "Empalme de drop y conexi\u00f3n correctas."}, {"ID_Localidad": "LOC-004", "Nombre_Localidad": "Cutervo", "ID_IAO": "LOC-004-C001-4", "Tipo_IAO": "C001", "Cuadrilla_IAO": "Cuadrilla IAO Z", "Fecha_Inicio": "16/02/2023", "Fecha_Fin": "17/02/2023", "Metraje_Cable_Drop": "59", "Armella_y_Templador_OK": "S\u00ed", "Recorrido_Grapas_OK": "S\u00ed", "Aterramiento_OK": "S\u00ed", "Ambiente_Instalacion": "Sala RF", "Serie_Eq_1_ONT": "ONT-47480", "Serie_Eq_2_Switch": "SWA-13239", "Serie_Eq_3_Regleta": "REG-72845", "Serie_Eq_4_Adicional": "-", "Reporte_Fotografico": "S\u00ed", "Observaciones": "Empalme de drop y conexi\u00f3n correctas."}, {"ID_Localidad": "LOC-005", "Nombre_Localidad": "Chota", "ID_IAO": "LOC-005-C001-1", "Tipo_IAO": "C001", "Cuadrilla_IAO": "Cuadrilla IAO Z", "Fecha_Inicio": "02/06/2023", "Fecha_Fin": "03/06/2023", "Metraje_Cable_Drop": "126", "Armella_y_Templador_OK": "S\u00ed", "Recorrido_Grapas_OK": "S\u00ed", "Aterramiento_OK": "S\u00ed", "Ambiente_Instalacion": "Sala RF", "Serie_Eq_1_ONT": "ONT-93554", "Serie_Eq_2_Switch": "SWA-24396", "Serie_Eq_3_Regleta": "REG-55227", "Serie_Eq_4_Adicional": "-", "Reporte_Fotografico": "S\u00ed", "Observaciones": "Empalme de drop y conexi\u00f3n correctas."}, {"ID_Localidad": "LOC-005", "Nombre_Localidad": "Chota", "ID_IAO": "LOC-005-IE03-2", "Tipo_IAO": "IE03", "Cuadrilla_IAO": "Cuadrilla IAO Z", "Fecha_Inicio": "01/06/2023", "Fecha_Fin": "03/06/2023", "Metraje_Cable_Drop": "109", "Armella_y_Templador_OK": "S\u00ed", "Recorrido_Grapas_OK": "S\u00ed", "Aterramiento_OK": "S\u00ed", "Ambiente_Instalacion": "Sala de Computo", "Serie_Eq_1_ONT": "ONT-93422", "Serie_Eq_2_Switch": "SWA-65771", "Serie_Eq_3_Regleta": "REG-28096", "Serie_Eq_4_Adicional": "-", "Reporte_Fotografico": "S\u00ed", "Observaciones": "Empalme de drop y conexi\u00f3n correctas."}];
+        const localidades = [{"id": "LOC-001", "nombre": "San Miguel de Pallaques"}, {"id": "LOC-002", "nombre": "Huamachuco"}, {"id": "LOC-003", "nombre": "Celendin"}, {"id": "LOC-004", "nombre": "Cutervo"}, {"id": "LOC-005", "nombre": "Chota"}];
+
+        const selectElement = document.getElementById('localidadFilter');
+        localidades.forEach(loc => {
+            let option = document.createElement('option');
+            option.value = loc.id; option.textContent = loc.nombre + " (" + loc.id + ")"; selectElement.appendChild(option);
+        });
+
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899'];
+
+        let chartTiposInstance, chartPostesInstance, chartCuadrillasInstance;
+
+        function initCharts() {
+            // 1. Barras Horizontales para Tipos
+            chartTiposInstance = new Chart(document.getElementById('chartTipos'), {
+                type: 'bar', 
+                data: { labels: [], datasets: [{ data: [], backgroundColor: '#3b82f6', borderRadius: 4 }] },
+                options: { 
+                    indexAxis: 'y', 
+                    responsive: true, maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } },
+                    scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { display: false } } }
+                }
+            });
+
+            // 2. Dona para Postes
+            chartPostesInstance = new Chart(document.getElementById('chartPostes'), {
+                type: 'doughnut', 
+                data: { labels: ["Nuevos", "Eléctricos", "Terceros"], datasets: [{ data: [], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'], borderWidth: 0, cutout: '65%' }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { padding: 15, boxWidth: 12 } } } }
+            });
+
+            // 3. Barras Verticales para Cuadrillas
+            chartCuadrillasInstance = new Chart(document.getElementById('chartCuadrillas'), {
+                type: 'bar', 
+                data: { labels: [], datasets: [{ data: [], backgroundColor: '#8b5cf6', borderRadius: 4 }] },
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } },
+                    scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } }
+                }
+            });
+        }
+
+        function updateDashboard() {
+            const selectedLoc = selectElement.value;
+            let fPext = selectedLoc === "ALL" ? rawPext : rawPext.filter(d => d.ID_Localidad === selectedLoc);
+            let fIao = selectedLoc === "ALL" ? rawIao : rawIao.filter(d => d.ID_Localidad === selectedLoc);
+
+            let totalFO = 0; let postesN = 0, postesE = 0, postesT = 0;
+            fPext.forEach(p => {
+                let valFO = parseFloat(p.Metraje_Promedio_FO.replace('.', '').replace(',', '.'));
+                if(!isNaN(valFO)) totalFO += valFO;
+                postesN += parseInt(p.Cant_Postes_Nuevos) || 0;
+                postesE += parseInt(p.Cant_Postes_Electricos) || 0;
+                postesT += parseInt(p.Cant_Postes_Terceros) || 0;
+            });
+
+            document.getElementById('valFO').innerHTML = totalFO.toLocaleString('en-US') + ' <span style="font-size:1.2rem">m</span>';
+            document.getElementById('valIAO').innerText = fIao.length;
+            document.getElementById('valPostes').innerText = (postesN + postesE + postesT);
+
+            let countTipos = {}; let countCuadrillas = {};
+            fIao.forEach(i => {
+                countTipos[i.Tipo_IAO] = (countTipos[i.Tipo_IAO] || 0) + 1;
+                countCuadrillas[i.Cuadrilla_IAO] = (countCuadrillas[i.Cuadrilla_IAO] || 0) + 1;
+            });
+
+            chartTiposInstance.data.labels = Object.keys(countTipos);
+            chartTiposInstance.data.datasets[0].data = Object.values(countTipos);
+            chartTiposInstance.update();
+
+            chartPostesInstance.data.datasets[0].data = [postesN, postesE, postesT];
+            chartPostesInstance.update();
+
+            chartCuadrillasInstance.data.labels = Object.keys(countCuadrillas);
+            chartCuadrillasInstance.data.datasets[0].data = Object.values(countCuadrillas);
+            chartCuadrillasInstance.update();
+
+            const tbody = document.querySelector('#iaoTable tbody');
+            tbody.innerHTML = '';
+            if (selectedLoc === "ALL") {
+                document.getElementById('detailsSection').style.display = "none";
+            } else {
+                document.getElementById('detailsSection').style.display = "block";
+                if (fIao.length === 0) tbody.innerHTML = '<tr><td colspan="6">No hay datos.</td></tr>';
+                else {
+                    fIao.forEach(i => {
+                        tbody.innerHTML += `<tr>
+                            <td>${i.ID_IAO}</td>
+                            <td><span style="background:var(--accent-1); padding:2px 6px; border-radius:6px;">${i.Tipo_IAO}</span></td>
+                            <td>${i.Cuadrilla_IAO}</td><td>${i.Metraje_Cable_Drop}m</td>
+                            <td><code>${i.Serie_Eq_1_ONT}</code></td><td>${i.Ambiente_Instalacion}</td>
+                        </tr>`;
+                    });
+                }
+            }
+        }
+
+        window.onload = function() { initCharts(); updateDashboard(); };
+    </script>
+</body>
+</html>
